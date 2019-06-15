@@ -5,14 +5,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using odd.web.Models;
+using odd.web.Services;
 
 namespace odd.web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        public IActionResult Index()
+        public HomeController(IOddServices oddService, ITeamServices teamService) : base (oddService, teamService)
         {
-            return View();
+
+        }
+        public IActionResult index()
+        {
+            return View(_oddService.ClientQueryOdds());
         }
 
         public IActionResult Privacy()

@@ -1,8 +1,45 @@
-﻿@{
+﻿@model IEnumerable<ClientQuery>
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <div class="text-center">
+        <h1 class="display-4">Real Time Odds</h1>
+        <div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Home VS Away</th>
+                        <th>Home Odd</th>
+                        <th>Draw Odd</th>
+                        <th>Away Odd</th>
+                        <th>Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+
+                    @if (Model == null)
+                    {
+                        <h4 class="display-4"> No Data</h4>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.HomeTeam VS @item.AwayTeam</td>
+                                <td>@item.HomeOdd</td>
+                                <td>@item.DrawOdd</td>
+                                <td>@item.AwayOdd</td>
+                                <td>@item.LastUpdated</td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>

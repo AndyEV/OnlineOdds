@@ -9,11 +9,13 @@ namespace odd.web.Data.Database
 {
     public class AppDBContext : DbContext
     {
+
         public AppDBContext(DbContextOptions<AppDBContext> options)
            : base(options)
         { }
 
         public DbSet<Odd> Odds { get; set; }
+        public DbSet<Team> Teams { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
