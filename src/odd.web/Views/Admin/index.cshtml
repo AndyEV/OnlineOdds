@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewData["Title"] = "Team Odds - Back Office";
+}
+
+
+    <div class="container">
+
+        <div class="text-center">
+            <h1 class="display-4">Manage Team Odds</h1>
+
+
+        </div>
+        <div class="col-md-6">
+            <a asp-action="odd_entry" class="btn btn-primary">Add Odd</a>
+        </div>
+
+
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Home VS Away</th>
+                        <th>Home Odd</th>
+                        <th>Draw Odd</th>
+                        <th>Away Odd</th>
+                        <th>Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+
+                    @if (ViewData["Odds"] == null)
+                    {
+                        <h4 class="display-4"> No Data</h4>
+                    }
+                    else
+                    {
+                        foreach (var item in (IEnumerable<ClientQuery>)ViewData["Odds"])
+                        {
+                            <tr>
+                                <td>@item.HomeTeam VS @item.AwayTeam</td>
+                                <td>@item.HomeOdd</td>
+                                <td>@item.DrawOdd</td>
+                                <td>@item.AwayOdd</td>
+                                <td>@item.LastUpdated</td>
+                                <td></td>
+
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+
+
+
+

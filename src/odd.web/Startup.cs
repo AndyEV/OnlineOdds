@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +12,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using odd.web.Data.Database;
+using odd.web.DTOs;
 using odd.web.Services;
+using odd.web.Services.Validations;
 
 namespace odd.web
 {
@@ -38,10 +42,15 @@ namespace odd.web
                 (options => options.UseSqlServer(connection));
 
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<TeamValidator>());
 
             services.AddScoped<IOddServices, OddServices>();
             services.AddScoped<ITeamServices, TeamServices>();
+
+            //inject validator  
+            services.AddSingleton<IValidator<CreateOdd>, OddDtoValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

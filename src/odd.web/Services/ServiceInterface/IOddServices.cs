@@ -11,6 +11,8 @@ namespace odd.web.Services
         IQueryable<ClientQuery> ClientQueryOdds();
         IQueryable<ClientQuery> AdminQueryOdds(Guid? id);
 
+        void CreateOddAndTeam(CreateOdd dto);
+
         void CreateOdd(CreateOdd dto);
 
         void UpdateOdd(UpdateOdd dto);

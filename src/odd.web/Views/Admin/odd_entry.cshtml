@@ -1,0 +1,80 @@
+﻿@model CreateOdd
+
+
+@{
+    ViewData["Title"] = "Create Odd - Back Office";
+}
+
+
+    <div class="container">
+
+        <div class="text-center">
+            <h1 class="display-4">Odd Entry Page</h1>
+        </div>
+
+        <div class="col-md-12">
+            @Html.ValidationSummary()
+            <div class="portlet box blue">
+                <div class="portlet-body form">
+                    <form method="post" asp-action="odd_entry" asp-controller="admin" role="form" class="form-horizontal">
+                        <div class="form-body">
+                            <div class="form-group form-md-line-input">
+                                <label class="col-md-3 control-label" for="form_control_1">Choose Existing Team Pair</label>
+                                <div class="col-md-9">
+                                    <select class="form-control select2" asp-for="TeamId" asp-items="@(ViewBag.Teams)" ></select>
+                                    <span></span>
+                                    <div class="form-control-focus"> </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group form-md-line-input">
+                                <label class="col-md-3 control-label" for="form_control_1">Home Team</label>
+                                <div class="col-md-9">
+                                    <input asp-for="HomeTeam" type="text" class="form-control" id="form_control_1">
+                                    <div class="form-control-focus"> </div>
+                                </div>
+                            </div>
+                            <div class="form-group form-md-line-input">
+                                <label class="col-md-3 control-label" for="form_control_1">Away Team</label>
+                                <div class="col-md-9">
+                                    <input asp-for="AwayTeam" type="text" class="form-control" id="form_control_1">
+                                    <div class="form-control-focus"> </div>
+                                </div>
+                            </div>
+                            <div class="form-group form-md-line-input">
+                                <label class="col-md-3 control-label" for="form_control_1">Home Wining Odd</label>
+                                <div class="col-md-9">
+                                    <input asp-for="HomeOdd" type="text" class="form-control" id="form_control_1">
+                                    <div class="form-control-focus"> </div>
+                                </div>
+                            </div>
+                            <div class="form-group form-md-line-input">
+                                <label class="col-md-3 control-label" for="form_control_1">Draw Odd</label>
+                                <div class="col-md-9">
+                                    <input asp-for="DrawOdd" type="text" class="form-control" id="form_control_1">
+                                    <div class="form-control-focus"> </div>
+                                </div>
+                            </div>
+                            <div class="form-group form-md-line-input">
+                                <label class="col-md-3 control-label" for="form_control_1">Away Wining Odd</label>
+                                <div class="col-md-9">
+                                    <input asp-for="AwayOdd" type="text" class="form-control" id="form_control_1">
+                                    <div class="form-control-focus"> </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <button type="submit" class="btn btn-primary">Publish Odds</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
