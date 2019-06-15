@@ -13,7 +13,7 @@ namespace odd.web.Data.Domians
 
 
         // Entity Mapping
-        public Team TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public virtual Team Team { get; set; }
     }
 }
