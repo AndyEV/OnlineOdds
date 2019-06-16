@@ -9,7 +9,8 @@ namespace odd.web.Services
     public interface IOddServices
     {
         IQueryable<ClientQuery> ClientQueryOdds();
-        IQueryable<ClientQuery> AdminQueryOdds(Guid? id);
+        IQueryable<AdminQuery> AdminQueryOdds(Guid? id);
+        SingleQuery SingleOdd(Guid id);
 
         void CreateOddAndTeam(CreateOdd dto);
 
@@ -17,6 +18,6 @@ namespace odd.web.Services
 
         void UpdateOdd(UpdateOdd dto);
 
-        void DeleteOdd(Guid id);
+        bool DeleteOdd(Guid id);
     }
 }
