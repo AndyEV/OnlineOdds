@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using odd.web.Data.Database;
+using odd.web.Services;
 
 namespace odd.web
 {
@@ -38,6 +39,9 @@ namespace odd.web
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddScoped<IOddServices, OddServices>();
+            services.AddScoped<ITeamServices, TeamServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
