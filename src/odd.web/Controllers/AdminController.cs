@@ -18,10 +18,15 @@ namespace odd.web.Controllers
     public class AdminController : BaseController
     {
         private readonly OddDtoValidator _validator;
-        protected IHubContext<OddPublisher> _hub;
-        public AdminController(IOddServices oddService, ITeamServices teamService, OddDtoValidator validator, IHubContext<OddPublisher> hub) : base(oddService, teamService)
+        private readonly IOddServices _oddService;
+        private readonly ITeamServices _teamService;
+        public IHubContext<OddPublisher> _hub;
+
+        public AdminController(IOddServices oddService, IHubContext<OddPublisher> hub, ITeamServices teamService) 
         {
-            _validator = validator;
+            _validator = new OddDtoValidator();
+            _teamService = teamService;
+            _oddService = oddService;
             _hub = hub;
         }
 

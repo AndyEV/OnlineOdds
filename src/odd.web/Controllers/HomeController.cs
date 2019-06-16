@@ -14,10 +14,10 @@ namespace odd.web.Controllers
 {
     public class HomeController : BaseController
     {
-
-        public HomeController(IOddServices oddService, ITeamServices teamService) : base (oddService, teamService)
+        private readonly IOddServices _oddService;
+        public HomeController(IOddServices oddService)
         {
-            
+            _oddService = oddService;
         }
         public IActionResult index()
         {

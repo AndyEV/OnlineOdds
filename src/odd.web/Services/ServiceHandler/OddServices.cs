@@ -20,9 +20,9 @@ namespace odd.web.Services
         public IQueryable<AdminQuery> AdminQueryOdds(Guid? id)
         {
             if(id != null)
-                return _context.Odds.Where(y => y.TeamId == id).AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH’:’mm’:’ss ") });
+                return _context.Odds.Where(y => y.TeamId == id).AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH:mm:ss") });
 
-            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { Id = x.Id, TeamId = x.TeamId, HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH’:’mm’:’ss ") });
+            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { Id = x.Id, TeamId = x.TeamId, HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH:mm:ss") });
         }
 
         public IQueryable<ClientQuery> ClientQueryOdds()
@@ -33,28 +33,36 @@ namespace odd.web.Services
         public void CreateOddAndTeam(CreateOdd dto)
         {
 
-            if (dto.TeamId != Guid.Empty)
+            try
             {
-                var _check_today_entry = _context.Odds.Where(x => x.TeamId == dto.TeamId && x.CreatedAt == DateTime.Today);
-                if (_check_today_entry.Any())
-                    return;
+                if (dto.TeamId != Guid.Empty)
+                {
+                    var _check_today_entry = _context.Odds.Where(x => x.TeamId == dto.TeamId && x.CreatedAt == DateTime.Today);
+                    if (_check_today_entry.Any())
+                        return;
 
-                _context.Odds.Add(OddFactory.CreateOddComand(dto));
-            }
+                    _context.Odds.Add(OddFactory.CreateOddComand(dto));
+                }
 
-            var _validat_existing = _context.Teams.Where(x => x.HomeTeam == dto.HomeTeam && x.AwayTeam == dto.AwayTeam);
-            if (_validat_existing.Any())
-            {
-                dto.TeamId = _validat_existing.FirstOrDefault().Id;
-                _context.Odds.Add(OddFactory.CreateOddComand(dto));
-            }
+                var _validat_existing = _context.Teams.Where(x => x.HomeTeam == dto.HomeTeam && x.AwayTeam == dto.AwayTeam);
+                if (_validat_existing.Any())
+                {
+                    dto.TeamId = _validat_existing.FirstOrDefault().Id;
+                    _context.Odds.Add(OddFactory.CreateOddComand(dto));
+                }
 
-             var _obj = TeamFactory.CreateTeam(dto);
+                var _obj = TeamFactory.CreateTeam(dto);
                 dto.TeamId = _obj.Id;
                 _context.Teams.Add(_obj);
                 _context.Odds.Add(OddFactory.CreateOddComand(dto));
 
-            _context.SaveChanges();
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         public void CreateOdd(CreateOdd dto)
@@ -65,31 +73,48 @@ namespace odd.web.Services
 
         public bool DeleteOdd(Guid id)
         {
-            var _entity = _context.Odds.Find(id);
-            if (_entity == null)
+            try
             {
-                return false;
+                var _entity = _context.Odds.Find(id);
+                if (_entity == null)
+                {
+                    return false;
+                }
+
+                _context.Odds.Remove(_entity);
+                _context.SaveChanges();
+
+                return true;
             }
+            catch (Exception ex)
+            {
 
-            _context.Odds.Remove(_entity);
-            _context.SaveChanges();
-
-            return true;
+                throw ex;
+            }
         }
 
         public void UpdateOdd(UpdateOdd dto)
         {
-            var _entity = _context.Odds.Find(dto.Id);
-            if (_entity == null)
-                return;
+            try
+            {
+                var _entity = _context.Odds.Find(dto.Id);
+                if (_entity == null)
+                    return;
 
-            _entity.HomeOdd = dto.HomeOdd;
-            _entity.AwayOdd = dto.AwayOdd;
-            _entity.DrawOdd = dto.DrawOdd;
-            _entity.Id = dto.Id;
+                _entity.HomeOdd = dto.HomeOdd;
+                _entity.AwayOdd = dto.AwayOdd;
+                _entity.DrawOdd = dto.DrawOdd;
+                _entity.Id = dto.Id;
+                _entity.UpdatedAt = DateTime.Now;
 
-            _context.Odds.Update(_entity);
-            _context.SaveChanges();
+                _context.Odds.Update(_entity);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         public SingleQuery SingleOdd(Guid id)
