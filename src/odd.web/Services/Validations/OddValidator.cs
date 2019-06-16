@@ -33,7 +33,7 @@ namespace odd.web.Services.Validations
     {
         public DeleteOddValidations()
         {
-            RuleFor(x => x.Id).NotEmpty().WithMessage("Select Odd to delete");
+            RuleFor(x => x.Id).NotNull().WithMessage("Select Odd to delete");
         }
     }
 }

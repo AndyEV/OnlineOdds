@@ -10,5 +10,11 @@ namespace odd.web.DTOs
     {
         [Required]
         public Guid Id { get; set; }
+
+        public string HomeTeam { get; set; }
+        public string AwayTeam { get; set; }
+        public decimal HomeOdd { get; set; }
+        public decimal DrawOdd { get; set; }
+        public decimal AwayOdd { get; set; }
     }
 }

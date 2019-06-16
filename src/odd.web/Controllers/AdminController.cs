@@ -83,7 +83,7 @@ namespace odd.web.Controllers
             var odd = _oddService.SingleOdd(id);
             if (odd != null)
             {
-                var data = new UpdateOdd { Id = id, HomeTeam = odd.HomeTeam, AwayTeam = odd.AwayTeam, TeamId = odd.TeamId, HomeOdd = odd.HomeOdd, AwayOdd = odd.AwayOdd, DrawOdd = odd.DrawOdd };
+                var data = new UpdateOdd { Id = id, HomeTeam = odd.HomeTeam, AwayTeam = odd.AwayTeam, HomeOdd = odd.HomeOdd, AwayOdd = odd.AwayOdd, DrawOdd = odd.DrawOdd };
                 return View(data);
             }
 
@@ -105,6 +105,44 @@ namespace odd.web.Controllers
             }
 
             _oddService.UpdateOdd(dto);
+
+            //
+            if (_context.Clients != null)
+            {
+                var data = _oddService.ClientQueryOdds();
+                await _context.Clients.All.SendAsync("BroadcastData", data);
+            }
+
+            return RedirectToAction(nameof(index));
+        }
+
+        public IActionResult odd_delete(Guid id)
+        {
+            var odd = _oddService.SingleOdd(id);
+            if (odd != null)
+            {
+                var data = new DeleteOdd { Id = id, HomeTeam = odd.HomeTeam, AwayTeam = odd.AwayTeam, HomeOdd = odd.HomeOdd, AwayOdd = odd.AwayOdd, DrawOdd = odd.DrawOdd };
+                return View(data);
+            }
+
+            return RedirectToAction(nameof(index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> odd_delete(DeleteOdd dto)
+        {
+            //This is the clean process instantiating my validator
+            var _val = new DeleteOddValidations();
+            var results = _val.Validate(dto);
+
+            if (!results.IsValid)
+            {
+                results.AddToModelState(ModelState, null);
+
+                return View(dto);
+            }
+
+            _oddService.DeleteOdd(dto.Id);
 
             //
             if (_context.Clients != null)
