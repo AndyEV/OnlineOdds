@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using odd.services;
 using odd.web.Data.Database;
 using odd.web.DTOs;
 using odd.web.Services;
@@ -46,11 +47,14 @@ namespace odd.web
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<TeamValidator>());
 
-            services.AddScoped<IOddServices, OddServices>();
-            services.AddScoped<ITeamServices, TeamServices>();
+            services.AddTransient<IOddServices, OddServices>();
+            services.AddTransient<ITeamServices, TeamServices>();
 
             //inject validator  
             services.AddSingleton<IValidator<CreateOdd>, OddDtoValidator>();
+
+            //Add SignalR
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,6 +71,11 @@ namespace odd.web
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            app.UseSignalR(routes =>  // <-- SignalR
+            {
+                routes.MapHub<OddPublisher>("/oddPublisher");
+            });
 
             app.UseMvc(routes =>
             {

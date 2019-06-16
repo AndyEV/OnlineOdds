@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System;
+using odd.web.DTOs;
+using odd.web.Services;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace odd.services
 {
     public class OddPublisher : Hub
     {
-        public async Task BroadcastData()
-        {
-            await Clients.All.SendAsync("BroadcastData");
-        }
+
+        
     }
 }

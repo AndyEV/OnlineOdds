@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
+using odd.services;
 using odd.web.DTOs;
 using odd.web.Services;
 using odd.web.Services.Validations;
@@ -18,10 +18,11 @@ namespace odd.web.Controllers
     public class AdminController : BaseController
     {
         private readonly OddDtoValidator _validator;
-
-        public AdminController(IOddServices oddService, ITeamServices teamService, OddDtoValidator validator) : base(oddService, teamService)
+        protected IHubContext<OddPublisher> _context;
+        public AdminController(IOddServices oddService, ITeamServices teamService, OddDtoValidator validator, IHubContext<OddPublisher> context) : base(oddService, teamService)
         {
             _validator = validator;
+            _context = context;
         }
 
         // GET: /<controller>/
@@ -42,11 +43,11 @@ namespace odd.web.Controllers
         }
 
         [HttpPost]
-        public IActionResult odd_entry(CreateOdd dto)
+        public async Task<IActionResult> odd_entry(CreateOdd dto)
         {
-            var data = new List<SelectListItem> { new SelectListItem { Text = "Select..." } };
-            data.AddRange(_teamService.QueryTeams().Select(x => new SelectListItem { Value = x.Id.ToString(), Text = $"{x.HomeTeam} VS {x.AwayTeam}" }));
-            ViewBag.Teams = data;
+            var _teams = new List<SelectListItem> { new SelectListItem { Text = "Select..." } };
+            _teams.AddRange(_teamService.QueryTeams().Select(x => new SelectListItem { Value = x.Id.ToString(), Text = $"{x.HomeTeam} VS {x.AwayTeam}" }));
+            ViewBag.Teams = _teams;
 
             // This would probably be at the service level
             if (dto.TeamId == Guid.Empty && string.IsNullOrEmpty(dto.HomeTeam))
@@ -66,7 +67,15 @@ namespace odd.web.Controllers
             
             _oddService.CreateOddAndTeam(dto);
 
+            //
+            if (_context.Clients != null)
+            {
+                var data = _oddService.ClientQueryOdds();
+                await _context.Clients.All.SendAsync("BroadcastData", data);
+            }
+
             return RedirectToAction(nameof(index));
         }
+
     }
 }

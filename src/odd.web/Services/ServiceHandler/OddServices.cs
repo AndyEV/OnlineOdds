@@ -25,7 +25,7 @@ namespace odd.web.Services
 
         public IQueryable<ClientQuery> ClientQueryOdds()
         {
-            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new ClientQuery { HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy") });
+            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new ClientQuery { TeamId = x.TeamId, HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy") });
         }
 
         public void CreateOddAndTeam(CreateOdd dto)
@@ -41,14 +41,12 @@ namespace odd.web.Services
               _context.Odds.Add(OddFactory.CreateOddComand(dto));
 
             _context.SaveChanges();
-            _context.Dispose();
         }
 
         public void CreateOdd(CreateOdd dto)
         {
             _context.Odds.Add(OddFactory.CreateOddComand(dto));
             _context.SaveChanges();
-            _context.Dispose();
         }
 
         public void DeleteOdd(Guid id)
