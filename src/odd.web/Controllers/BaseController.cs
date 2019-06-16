@@ -13,12 +13,8 @@ namespace odd.web.Controllers
 {
     public class BaseController : Controller
     {
-        public IOddServices _oddService;
-        public ITeamServices _teamService;
-        public BaseController(IOddServices oddService, ITeamServices teamService)
+        public BaseController()
         {
-            _oddService = oddService;
-            _teamService = teamService;
         }
     }
 }
