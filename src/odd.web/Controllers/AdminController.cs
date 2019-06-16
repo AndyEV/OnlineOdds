@@ -26,10 +26,10 @@ namespace odd.web.Controllers
         }
 
         // GET: /<controller>/
-        public IActionResult index()
+        public IActionResult index(Guid? teamId)
         {
 
-            ViewData["Odds"] = _oddService.ClientQueryOdds();
+            ViewData["Odds"] = _oddService.AdminQueryOdds(teamId);
             return View();
         }
 
@@ -66,6 +66,45 @@ namespace odd.web.Controllers
             }
             
             _oddService.CreateOddAndTeam(dto);
+
+            //
+            if (_context.Clients != null)
+            {
+                var data = _oddService.ClientQueryOdds();
+                await _context.Clients.All.SendAsync("BroadcastData", data);
+            }
+
+            return RedirectToAction(nameof(index));
+        }
+
+
+        public IActionResult odd_update(Guid id)
+        {
+            var odd = _oddService.SingleOdd(id);
+            if (odd != null)
+            {
+                var data = new UpdateOdd { Id = id, HomeTeam = odd.HomeTeam, AwayTeam = odd.AwayTeam, TeamId = odd.TeamId, HomeOdd = odd.HomeOdd, AwayOdd = odd.AwayOdd, DrawOdd = odd.DrawOdd };
+                return View(data);
+            }
+
+            return RedirectToAction(nameof(index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> odd_update(UpdateOdd dto)
+        {
+            //This is the clean process instantiating my validator
+            var _val = new OddUpdateDtoValidator();
+            var results = _val.Validate(dto);
+
+            if (!results.IsValid)
+            {
+                results.AddToModelState(ModelState, null);
+
+                return View(dto);
+            }
+
+            _oddService.UpdateOdd(dto);
 
             //
             if (_context.Clients != null)

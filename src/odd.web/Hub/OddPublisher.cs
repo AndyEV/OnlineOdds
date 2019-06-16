@@ -8,7 +8,6 @@ namespace odd.services
 {
     public class OddPublisher : Hub
     {
-
         
     }
 }

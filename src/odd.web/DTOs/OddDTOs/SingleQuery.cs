@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace odd.web.DTOs
 {
-    public class ClientQuery
+    public class SingleQuery
     {
         public string HomeTeam { get; set; }
         public string AwayTeam { get; set; }
@@ -15,5 +15,7 @@ namespace odd.web.DTOs
         public string LastUpdated { get; set; }
 
 
+        // Entity Mapping
+        public Guid TeamId { get; set; }
     }
 }
