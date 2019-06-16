@@ -20,27 +20,39 @@ namespace odd.web.Services
         public IQueryable<AdminQuery> AdminQueryOdds(Guid? id)
         {
             if(id != null)
-                return _context.Odds.Where(y => y.TeamId == id).AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy") });
+                return _context.Odds.Where(y => y.TeamId == id).AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH’:’mm’:’ss ") });
 
-            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { Id = x.Id, TeamId = x.TeamId, HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy") });
+            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { Id = x.Id, TeamId = x.TeamId, HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH’:’mm’:’ss ") });
         }
 
         public IQueryable<ClientQuery> ClientQueryOdds()
         {
-            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new ClientQuery { HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy") });
+            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new ClientQuery { HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH:mm:ss ") });
         }
 
         public void CreateOddAndTeam(CreateOdd dto)
         {
-            if (dto.TeamId == Guid.Empty)
+
+            if (dto.TeamId != Guid.Empty)
             {
-                var _obj = TeamFactory.CreateTeam(dto);
+                var _check_today_entry = _context.Odds.Where(x => x.TeamId == dto.TeamId && x.CreatedAt == DateTime.Today);
+                if (_check_today_entry.Any())
+                    return;
+
+                _context.Odds.Add(OddFactory.CreateOddComand(dto));
+            }
+
+            var _validat_existing = _context.Teams.Where(x => x.HomeTeam == dto.HomeTeam && x.AwayTeam == dto.AwayTeam);
+            if (_validat_existing.Any())
+            {
+                dto.TeamId = _validat_existing.FirstOrDefault().Id;
+                _context.Odds.Add(OddFactory.CreateOddComand(dto));
+            }
+
+             var _obj = TeamFactory.CreateTeam(dto);
                 dto.TeamId = _obj.Id;
                 _context.Teams.Add(_obj);
                 _context.Odds.Add(OddFactory.CreateOddComand(dto));
-            }
-            else
-              _context.Odds.Add(OddFactory.CreateOddComand(dto));
 
             _context.SaveChanges();
         }
