@@ -18,11 +18,11 @@ namespace odd.web.Controllers
     public class AdminController : BaseController
     {
         private readonly OddDtoValidator _validator;
-        protected IHubContext<OddPublisher> _context;
-        public AdminController(IOddServices oddService, ITeamServices teamService, OddDtoValidator validator, IHubContext<OddPublisher> context) : base(oddService, teamService)
+        protected IHubContext<OddPublisher> _hub;
+        public AdminController(IOddServices oddService, ITeamServices teamService, OddDtoValidator validator, IHubContext<OddPublisher> hub) : base(oddService, teamService)
         {
             _validator = validator;
-            _context = context;
+            _hub = hub;
         }
 
         // GET: /<controller>/
@@ -68,10 +68,10 @@ namespace odd.web.Controllers
             _oddService.CreateOddAndTeam(dto);
 
             //
-            if (_context.Clients != null)
+            if (_hub.Clients != null)
             {
                 var data = _oddService.ClientQueryOdds();
-                await _context.Clients.All.SendAsync("BroadcastData", data);
+                await _hub.Clients.All.SendAsync("BroadcastData", data);
             }
 
             return RedirectToAction(nameof(index));
@@ -106,11 +106,12 @@ namespace odd.web.Controllers
 
             _oddService.UpdateOdd(dto);
 
-            //
-            if (_context.Clients != null)
+            // Just for the purpose of this test, there's a better way of extracting this into
+            // ageneric class for all CRUD operation
+            if (_hub.Clients != null)
             {
                 var data = _oddService.ClientQueryOdds();
-                await _context.Clients.All.SendAsync("BroadcastData", data);
+                await _hub.Clients.All.SendAsync("BroadcastData", data);
             }
 
             return RedirectToAction(nameof(index));
@@ -145,10 +146,10 @@ namespace odd.web.Controllers
             _oddService.DeleteOdd(dto.Id);
 
             //
-            if (_context.Clients != null)
+            if (_hub.Clients != null)
             {
                 var data = _oddService.ClientQueryOdds();
-                await _context.Clients.All.SendAsync("BroadcastData", data);
+                await _hub.Clients.All.SendAsync("BroadcastData", data);
             }
 
             return RedirectToAction(nameof(index));
