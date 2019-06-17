@@ -72,13 +72,6 @@ namespace odd.web.Controllers
             
             _oddService.CreateOddAndTeam(dto);
 
-            //
-            if (_hub.Clients != null)
-            {
-                var data = _oddService.ClientQueryOdds();
-                await _hub.Clients.All.SendAsync("BroadcastData", data);
-            }
-
             return RedirectToAction(nameof(index));
         }
 
@@ -111,14 +104,6 @@ namespace odd.web.Controllers
 
             _oddService.UpdateOdd(dto);
 
-            // Just for the purpose of this test, there's a better way of extracting this into
-            // ageneric class for all CRUD operation
-            if (_hub.Clients != null)
-            {
-                var data = _oddService.ClientQueryOdds();
-                await _hub.Clients.All.SendAsync("BroadcastData", data);
-            }
-
             return RedirectToAction(nameof(index));
         }
 
@@ -150,11 +135,16 @@ namespace odd.web.Controllers
 
             _oddService.DeleteOdd(dto.Id);
 
-            //
+            return RedirectToAction(nameof(index));
+        }
+
+        public async Task<IActionResult> odd_publish()
+        {
+            // Just for the purpose of this test, there's a better way of extracting this into
+            // ageneric class for all CRUD operation
             if (_hub.Clients != null)
             {
-                var data = _oddService.ClientQueryOdds();
-                await _hub.Clients.All.SendAsync("BroadcastData", data);
+                await _hub.Clients.All.SendAsync("BroadcastData");
             }
 
             return RedirectToAction(nameof(index));
