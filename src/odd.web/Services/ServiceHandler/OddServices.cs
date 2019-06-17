@@ -20,14 +20,14 @@ namespace odd.web.Services
         public IQueryable<AdminQuery> AdminQueryOdds(Guid? id)
         {
             if(id != null)
-                return _context.Odds.Where(y => y.TeamId == id).AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH:mm:ss") });
+                return _context.Odds.Where(y => y.TeamId == id).AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH:mm:ss") }).OrderBy(t => t.LastUpdated);
 
-            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { Id = x.Id, TeamId = x.TeamId, HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH:mm:ss") });
+            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new AdminQuery { Id = x.Id, TeamId = x.TeamId, HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH:mm:ss") }).OrderBy(t => t.LastUpdated);
         }
 
         public IQueryable<ClientQuery> ClientQueryOdds()
         {
-            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new ClientQuery { HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH:mm:ss ") });
+            return _context.Odds.AsQueryable().Include(x => x.Team).Select(x => new ClientQuery { HomeOdd = x.HomeOdd, DrawOdd = x.DrawOdd, AwayOdd = x.AwayOdd, HomeTeam = x.Team.HomeTeam, AwayTeam = x.Team.AwayTeam, LastUpdated = x.UpdatedAt.ToString("dddd, dd MMMM yyyy HH:mm:ss ") }).OrderBy(t => t.LastUpdated);
         }
 
         public void CreateOddAndTeam(CreateOdd dto)
@@ -37,8 +37,7 @@ namespace odd.web.Services
             {
                 if (dto.TeamId != Guid.Empty)
                 {
-                    var _check_today_entry = _context.Odds.Where(x => x.TeamId == dto.TeamId && x.CreatedAt == DateTime.Today);
-                    if (_check_today_entry.Any())
+                    if (ValidateDailyDuplicate(dto.TeamId))
                         return;
 
                     _context.Odds.Add(OddFactory.CreateOddComand(dto));
@@ -49,6 +48,9 @@ namespace odd.web.Services
                 var _validat_existing = _context.Teams.Where(x => x.HomeTeam == dto.HomeTeam && x.AwayTeam == dto.AwayTeam);
                 if (_validat_existing.Any())
                 {
+                    if (ValidateDailyDuplicate(_validat_existing.First().Id))
+                        return;
+
                     dto.TeamId = _validat_existing.FirstOrDefault().Id;
                     _context.Odds.Add(OddFactory.CreateOddComand(dto));
                     _context.SaveChanges();
@@ -119,6 +121,12 @@ namespace odd.web.Services
 
                 throw ex;
             }
+        }
+
+        internal bool ValidateDailyDuplicate(Guid teamId)
+        {
+            var _check_today_entry = _context.Odds.Where(x => x.TeamId == teamId && x.UpdatedAt.Date == DateTime.Today.Date);
+            return (_check_today_entry.Any()) ? true : false;
         }
 
         public SingleQuery SingleOdd(Guid id)

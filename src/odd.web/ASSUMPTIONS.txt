@@ -1,1 +1,11 @@
 ﻿
+I added a few assumptions to the business story that where no mentioned
+
+## ASSUMPTION 1
+I assumed these odd will definitely be added to sport match event, so I took that into consideration where both Team are define before adding the odds for each of them.
+
+## ASSUMPTION 2
+I also assumed that the application shouldn’t allow same record with same team entered twice for a day, am assuming each day carries unique team odds.
+
+
+That's not all I thought of though but just added the above for completion
