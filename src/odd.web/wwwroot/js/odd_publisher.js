@@ -5,8 +5,8 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/oddPublisher").bui
 connection.on("BroadcastData", data => {
 
     console.table(data);
-    refresh(result);
-    //getAll();
+    //refresh(data);
+    getAll();
 })
 
 
@@ -22,21 +22,21 @@ function getAll() {
     $.ajax({
         url: '/home/GetLatestOddData',
         dataType: 'json',
-        data: data,
-        success: refresh(data)
+        success: function (data) { refresh(data) }
     });
 }
 
 function refresh(data) {
+    console.table(data);
+    var Html = "";
     for (var i = 0; i < data.length; i++) {
-        var Html = "<tr><td>" +
+        Html += "<tr><td>" +
             data[i].homeTeam + " VS " +
             data[i].awayTeam + "</td><td>" +
             data[i].homeOdd + "</td><td>" +
             data[i].drawOdd + "</td><td>" +
             data[i].awayOdd + "</td><td>" +
             data[i].lastUpdated + "</td></tr > ";
-        model.empty().append(Html);
-
     }
+    model.empty().append(Html);
 }

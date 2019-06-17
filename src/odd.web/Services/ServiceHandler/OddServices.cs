@@ -42,6 +42,8 @@ namespace odd.web.Services
                         return;
 
                     _context.Odds.Add(OddFactory.CreateOddComand(dto));
+                    _context.SaveChanges();
+                    return;
                 }
 
                 var _validat_existing = _context.Teams.Where(x => x.HomeTeam == dto.HomeTeam && x.AwayTeam == dto.AwayTeam);
@@ -49,6 +51,8 @@ namespace odd.web.Services
                 {
                     dto.TeamId = _validat_existing.FirstOrDefault().Id;
                     _context.Odds.Add(OddFactory.CreateOddComand(dto));
+                    _context.SaveChanges();
+                    return;
                 }
 
                 var _obj = TeamFactory.CreateTeam(dto);
